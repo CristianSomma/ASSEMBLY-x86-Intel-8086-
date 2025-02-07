@@ -6,9 +6,11 @@ name "Somma tra due numeri presi in input (di CRISTIAN SOMMA 3^BII)"
 
 data segment
     num1 DB ?   ; Inizializzo senza valore (?) il primo numero da 1 byte (DB)
+    num2 DB ?   ; Inizializzo senza valore il secondo numero.
+    sum DB ?    ; Inizializzo la variabile che conterra' la somma dei due numeri
     msg1 DB "Inserire il primo numero: $"   ; Primo messaggio, la stringa termina sempre con $
     msg2 DB "Inserire il secondo numero: $" ; Come per msg1
-    msg3 DB "Guardare il debugger nella variabile num1 il valore della somma.$"
+    msg3 DB "Guardare il debugger nella variabile sum il valore della somma.$"
     endMsg DB "Premere qualunque tasto per uscire...$"
 ends
 
@@ -22,24 +24,27 @@ start:
     MOV AX, data ; Muovo nel registro ax il riferimento al data segment
     MOV DS, AX  ; Assegno al registro il valore di ax, ovvero la reference al data segment
 
+    MOV AX, 0000h   ; Inizializzo il registro ax a zero per ripulirlo
     LEA DX, msg1    ; Muovo nel data register l'indirizzo della stringa che voglio stampare
     CALL print  ; Stampo la riga all'indirizzo aggiunto in dx in precedenza
     CALL return ; Con call richiamo la subroutine "return"            
     
     CALL input  ; Chiamo la subroutine di input per il primo numero            
-    SUB AL, 30h
+    SUB AL, 30h ; Sottraggo al codice ASCII 48 (30h) per ottenere il valore effettivo inserito
     MOV num1, AL    ; Salvo il valore in input, che si trova in al nella variabile num1
+    MOV sum, AL ; sposto nella variabile sum il valore del primo numero per poi fare la somma
     CALL return
         
-    LEA DX, msg2
+    LEA DX, msg2    ; Salvo nel registro dx l'indirizzo di memoria della variabile msg2
     CALL print  ; stampo msg2
     CALL return ; a capo riga
     
     CALL input  ; input del secondo numero
     SUB AL, 30h ; Sottraggo al codice ASCII 48 per avere il valore numerico
+    MOV num2, AL    ; salva nella variabile num2 il valore del registro al
     
     ; SOMMA QUI SOTTO:
-    ADD num1, AL    ; addizione del contenuto della variabile num1 e del registro al che contiene il secondo
+    ADD sum, AL    ; addizione del contenuto della variabile SUM e del registro al che contiene il secondo numero
     
     CALL return
     

@@ -1,4 +1,8 @@
-    ; multi-segment executable file template.
+    name "Somma o sottrazione in base alla condizione"
+ 
+    ;NOTA:
+    ;Se la somma supera le due cifre, diventando una centinaia il calcolo non viene effettuato
+    ;correttamente.
     
     data segment
         num1 DB 2 dup(?)    ; inizializzo degli pseudo array che conterranno le cifre dei due numeri
@@ -54,10 +58,8 @@
         ;-COMPARAZIONI-
         CMP AH, BH  ; esegue una comparazione delle cifre più significative, se ah...
         JG exe_subtraction  ; ...è maggiore di bh allora va al blocco exe_subtraction...
-        JE if_equal ; ...se i due sono uguali salta al blocco if_equal...
         JL exe_addition ; ...altrimenti salta al blocco di addizione
-         
-        if_equal:   ; blocco di codice eseguito se AL == BL
+        ; se AH == BH allora esegue un'altro controllo sulle unità... 
         CMP AL, BL  ; esegue una comparazione delle due cifre meno significative, se al...
         JGE exe_subtraction ; ...è maggiore o uguale a bl allora chiama la sottrazione...
         JL exe_addition    ; ...se invece è minore di bl chiama l'addizione
@@ -74,17 +76,15 @@
         ; per evitare sovrascrizione involontarie:
         MOV BH, AH  ; bh assume il valore di ah
         MOV BL, AL  ; bl assume il valore di al
-        ADD BH, 30h ; si aggiunge 48 per ottenere il corrispondente codice ASCII
-        ADD BL, 30h ; ""
         
         LEA DX, msg3    ; si stampa il messaggio finale
         CALL print
         
         MOV DL, BH  ; si muove nel registro dl il codice ASCII da stampare
-        CALL print_char ; si chiama la subroutine che stampa il carattere
+        CALL print_convert_char ; si chiama la subroutine che stampa il carattere
         
         MOV DL, BL  ; si fa lo stesso anche con la cifra delle unità
-        CALL print_char
+        CALL print_convert_char
         
         MOV AH, 1   ; si richiede un input per chiudere la finestra
         int 21h   
@@ -154,10 +154,11 @@
         RET
     subtraction ENDP
     ;---------------------------------------------------------------------------------------------
-    print_char PROC NEAR
+    print_convert_char PROC NEAR
+        ADD DL, 30h ; si aggiunge al numero da stampare 48 per ottenere il codice corrispondente
         MOV AH, 02h ; stampa il contenuto di al (codice ASCII)
         int 21h
         RET
-    print_char ENDP ; Fine della subroutine
+    print_convert_char ENDP ; Fine della subroutine
     ;---------------------------------------------------------------------------------------------
-    END start
+    END start ; set entry point and stop the assembler.

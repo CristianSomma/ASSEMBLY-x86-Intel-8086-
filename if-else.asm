@@ -159,4 +159,4 @@
         RET
     print_convert_char ENDP ; Fine della subroutine
     ;---------------------------------------------------------------------------------------------
-    END start ; set entry point and stop the assembler.
+    END start

@@ -7,8 +7,8 @@
     data segment
         num1 DB 2 dup(?)    ; inizializzo degli pseudo array che conterranno le cifre dei due numeri
         num2 DB 2 dup(?)
-        msg1 DB "Enter the first number (Max two digits):$"
-        msg2 DB "Enter the second number (Max two digits):$"
+        msg1 DB "Enter the first number (Two digits):$"
+        msg2 DB "Enter the second number (Two digits):$"
         msg3 DB "Il risultato dell'operazione e' $"
     ENDS
     
@@ -94,18 +94,16 @@
     ends
     ;---------------------------------------------------------------------------------------------          
     input PROC NEAR
+        MOV CX, 2   ; assegno al counter 2, ovvero il numero di input da ricevere
         input_loop:  ; Label che indica l'inizio del loop
         MOV AH, 01h ; Utilizzo la funzione di input con echo
         int 21h ; Richiamo l'interrupt
-        CMP AL, 0Dh ; Controllo che l'input se è stato premuto ENTER (\r)
-        JE end_input_loop ; Se è stato premuto ENTER salta alla fine del ciclo
         SUB AL, 30h ; Sottraggo 48 (30h) al codice ASCII inserito per ottenere il valore numerico
         MOV [SI], AL   ; Inserisco in num1, all'indirizzo determinato tramite SI l'input
         INC SI  ; Incremento di uno il registro SI (Source Index)
-        JMP input_loop   ; Se l'input non è ENTER ritorna all'inizio del loop per un nuovo input
-        end_input_loop:   ; Label che indica la fine del while
+        LOOP input_loop:   ; se cx != 0 salta alla label input_loop e riesegue il codice
         CALL return ; chiamo la subroutine per tornare a capo riga
-        ret ; Ritorna alla routine Main
+        RET ; Ritorna alla routine Main
     input ENDP    ; Fine della subroutine
     ;---------------------------------------------------------------------------------------------   
     print PROC NEAR
